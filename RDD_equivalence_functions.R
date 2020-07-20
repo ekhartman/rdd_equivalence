@@ -51,8 +51,10 @@ rdd.equiv = function(est, se, eps, alpha = 0.05) {
   rej = p < alpha
   critical = sqrt(qchisq(alpha, 1, eps^2/se^2))
   inverted <- tryCatch(uniroot(function(x) {
-    pchisq(est^2/se^2, 1, x^2/se^2) - alpha}, c(0.00001,10), tol = 0.0001)$root, silent = TRUE, error = function(e) NA)
-  return(list(rej = rej, p = p, inverted = inverted, power = 2*pnorm(critical) - 1))
+    pchisq(est^2/se^2, 1, x^2/se^2) - alpha}, 
+    c(0.00001,10), 
+    tol = 0.0001)$root, silent = TRUE, error = function(e) est)
+  return(list(rej = rej, p = p, inverted = inverted))
 }
 ##
 
