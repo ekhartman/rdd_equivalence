@@ -71,16 +71,18 @@ rdd.equiv = function(est, se, eps, alpha = 0.05) {
 ############################################
 
 ##
-rdd.tost.ratio = function(estL, estR, sdL, sdR, eps = 1.5, alpha = 0.05) {
+rdd.tost.ratio = function(estL, estR, seL, seR, eps = 1.5, alpha = 0.05) {
   if(eps < 1) { 
     stop("Epsilon must be > 1 for density equivalence test.")
   }
   
-  T1 = (estL - 1/eps * estR) / sqrt(sdL^2 + (1/eps)^2*sdR^2)
-  T2 = (estL - eps * estR) / sqrt(sdL^2 + (eps)^2*sdR^2)
+  T1 = (estL - 1/eps * estR) / sqrt(seL^2 + (1/eps)^2*seR^2)
+  T2 = (estL - eps * estR) / sqrt(seL^2 + (eps)^2*seR^2)
   
   inverted <- tryCatch(uniroot(function(x) {
-    max(pnorm((estL - 1/x * estR) / sqrt(sdL^2 + (1/x)^2*sdR^2), lower.tail = FALSE), pnorm((estL - x * estR) / sqrt(sdL^2 + (x)^2*sdR^2))) - alpha}, c(1, 100), tol = 0.0001)$root, silent = TRUE, error = function(e) NA)
+    max(pnorm((estL - 1/x * estR) / sqrt(seL^2 + (1/x)^2*seR^2), lower.tail = FALSE), 
+        pnorm((estL - x * estR) / sqrt(seL^2 + (x)^2*seR^2))) - alpha}, 
+                               c(1, 100), tol = 0.0001)$root, silent = TRUE, error = function(e) NA)
   
   p = max(pnorm(T1, lower.tail = FALSE), pnorm(T2))
   return(list(p = p, inverted = inverted))
