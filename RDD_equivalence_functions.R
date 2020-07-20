@@ -42,18 +42,19 @@ rdd.tost = function(est, se, eps, alpha = 0.05) {
 ############################################
 
 ###
-rdd.equiv = function(est, se, eps, alpha = 0.05) {
+rdd.equiv <- function(est, se, eps, alpha = 0.05, inv_int_search_tol = 0.0001, max_search_grid = 10) {
   if(eps < 0) { 
     stop("Epsilon must be > 0 for equivalence t-test.")
   }
   
   p = pchisq(est^2/se^2, 1, eps^2/se^2)
   rej = p < alpha
-  critical = sqrt(qchisq(alpha, 1, eps^2/se^2))
+  
   inverted <- tryCatch(uniroot(function(x) {
     pchisq(est^2/se^2, 1, x^2/se^2) - alpha}, 
-    c(0.00001,10), 
-    tol = 0.0001)$root, silent = TRUE, error = function(e) est)
+    c(0.00001, max(10, max_search_grid*abs(est))), tol = inv_int_search_tol)$root, 
+    silent = TRUE, error = function(e) abs(est))
+  
   return(list(rej = rej, p = p, inverted = inverted))
 }
 ##
