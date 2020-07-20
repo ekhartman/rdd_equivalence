@@ -62,8 +62,8 @@ rdd.equiv = function(est, se, eps, alpha = 0.05) {
 ##
 ## estL: point estimate from left
 ## estR: point estimate from right
-## sdL: sd estimate from the left
-## sdR: sd estimate from the right
+## seL: standard error estimate from the left
+## seR: standard error estimate from the right
 ## eps: positive equivalence range value
 ##      in ratio units
 ##      eps_l will be 1/eps_U
