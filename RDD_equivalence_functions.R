@@ -59,15 +59,11 @@ rdd.equiv = function(est, se, eps, alpha = 0.05) {
 ############################################
 ### Equivalence density test
 ### (using two-one-sided tests)
-### Assumes inputs consistent from the output
-### of rddensity package
 ##
 ## estL: point estimate from left
 ## estR: point estimate from right
 ## sdL: sd estimate from the left
 ## sdR: sd estimate from the right
-## neffL: sd estimate from the left
-## neffR: sd estimate from the right
 ## eps: positive equivalence range value
 ##      in ratio units
 ##      eps_l will be 1/eps_U
@@ -75,7 +71,7 @@ rdd.equiv = function(est, se, eps, alpha = 0.05) {
 ############################################
 
 ##
-rdd.tost.ratio = function(estL, estR, sdL, sdR, neffL, neffR, eps = 1.5, alpha = 0.05) {
+rdd.tost.ratio = function(estL, estR, sdL, sdR, eps = 1.5, alpha = 0.05) {
   if(eps < 1) { 
     stop("Epsilon must be > 1 for density equivalence test.")
   }
