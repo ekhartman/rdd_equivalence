@@ -42,7 +42,7 @@ rdd.tost = function(est, se, eps, alpha = 0.05) {
 ############################################
 
 ###
-rdd.equiv <- function(est, se, eps, alpha = 0.05, inv_int_search_tol = 0.0001, max_search_grid = 10) {
+rdd.equiv <- function(est, se, eps, alpha = 0.05, inv_int_search_tol = 0.001, max_search_grid = 3) {
   if(eps < 0) { 
     stop("Epsilon must be > 0 for equivalence t-test.")
   }
@@ -52,8 +52,21 @@ rdd.equiv <- function(est, se, eps, alpha = 0.05, inv_int_search_tol = 0.0001, m
   
   inverted <- tryCatch(uniroot(function(x) {
     pchisq(est^2/se^2, 1, x^2/se^2) - alpha}, 
-    c(0.00001, max(10, max_search_grid*abs(est))), tol = inv_int_search_tol)$root, 
-    silent = TRUE, error = function(e) abs(est))
+    c(0.00001, max(10, max_search_grid * abs(est) * se)), tol = inv_int_search_tol)$root, 
+    silent = TRUE, error = function(e) NA)
+  
+  ## if noncentrality parameter estimate is so close to zero that
+  ## p < alpha with at ncp = 0, return NA
+  if(pchisq(est^2/se^2, 1) < alpha) {
+    inverted = NA
+  } else {
+    inverted <- tryCatch(uniroot(function(x) {
+      pchisq(est^2/se^2, 1, x^2/se^2) - alpha}, 
+      c(0.00001, max(10, max_search_grid * abs(est) * se)), tol = inv_int_search_tol)$root, 
+      silent = TRUE, error = function(e) NA)
+    
+    if(is.na(inverted)) warning("No interval found, try increasing max_search_grid.")
+  }
   
   return(list(rej = rej, p = p, inverted = inverted))
 }
